@@ -147,7 +147,7 @@ export function App() {
             <span className="logo-icon" aria-hidden="true">🧭</span>
             <div>
               <h1 className="app-title">Trip Planner AI</h1>
-              <p className="app-subtitle">Intelligent, customized travel itineraries in structured JSON</p>
+              <p className="app-subtitle">Create personalized travel itineraries in seconds</p>
             </div>
           </div>
           <div className="badge-tech">
