@@ -152,31 +152,7 @@ Unlike a generic chatbot interface, the application uses structured JSON output 
 ## 5. Project Structure
 
 ```
-Trip/
-├── src/
-│   ├── components/
-│   │   ├── PromptInput.jsx     # Textarea, submit button & example prompt chips
-│   │   ├── TripHeader.jsx      # Title, destination badge, stats & actions
-│   │   ├── DaySection.jsx      # Daily breakdown & stop card lists
-│   │   ├── StopCard.jsx        # Individual stop with timings, category, reorder & delete
-│   │   ├── LoadingState.jsx    # Loading spinner & progress status
-│   │   ├── ErrorState.jsx      # Error banner with retry button
-│   │   └── EmptyState.jsx      # Initial landing screen with feature highlights
-│   ├── lib/
-│   │   ├── api.js              # Client-side API client with timeout & abort handling
-│   │   └── validateTrip.js     # Schema validation & data sanitization utility
-│   ├── App.jsx                 # Main stateful component (Request guard, stop editing)
-│   ├── main.jsx                # React root mount point
-│   └── index.css               # Clean responsive styles
-├── server/
-│   ├── index.js                # Express API server & routes
-│   └── generateTrip.js         # Isolated LLM service & prompt engineering
-├── test/
-│   └── test-cases.js           # Automated test suite for validator & edge cases
-├── .env.example                # Environment variables template
-├── package.json                # Project dependencies and npm scripts
-├── vite.config.js              # Vite config with backend proxy
-└── README.md                   # Project documentation
+
 ```
 
 ---
