@@ -97,5 +97,16 @@ assert("Sanitizes missing stop fields with reliable defaults",
   res9.data.days[0].stops[0].category === "Sightseeing"
 );
 
+// Test generateTrip mock generator pipeline
+const { generateTrip } = await import('../server/generateTrip.js');
+try {
+  const generatedTrip = await generateTrip("3 days in Hyderabad");
+  const validationRes = validateTrip(generatedTrip);
+  assert("generateTrip produces a valid itinerary structure", validationRes.isValid === true && validationRes.data.days.length > 0);
+} catch (e) {
+  console.error("DEBUG ERROR in generateTrip:", e);
+  assert("generateTrip ran without throwing unhandled exceptions", false);
+}
+
 console.log(`\nResults: ${passed} passed, ${failed} failed.\n`);
 if (failed > 0) process.exit(1);
