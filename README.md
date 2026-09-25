@@ -111,8 +111,6 @@ Trip/
 │   ├── lib/
 │   │   ├── api.js              # Client-side API client with timeout & abort handling
 │   │   └── validateTrip.js     # Schema validation & data sanitization utility
-│   ├── types/
-│   │   └── tripShape.js        # JSDoc type definitions & example schema
 │   ├── App.jsx                 # Main stateful component (Request guard, stop editing)
 │   ├── main.jsx                # React root mount point
 │   └── index.css               # Clean responsive styles

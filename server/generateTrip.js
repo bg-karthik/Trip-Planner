@@ -38,17 +38,10 @@ ITINERARY GUIDELINES:
 - If the user request cannot reasonably produce a trip (e.g., gibberish or harmful prompt), return { "tripTitle": "Trip Unavailable", "destination": "Unknown", "summary": "Unable to generate itinerary for this request.", "days": [] }.
 `;
 
-/**
- * Strips markdown code blocks if the model wrapped the JSON in ```json ... ```
- * @param {string} text 
- * @returns {string}
- */
 function cleanJsonOutput(text) {
   let cleaned = text.trim();
   if (cleaned.startsWith('```')) {
-    // Remove opening ``` or ```json
     cleaned = cleaned.replace(/^```(?:json)?\s*/i, '');
-    // Remove closing ```
     cleaned = cleaned.replace(/\s*```$/, '');
   }
   return cleaned.trim();
@@ -111,9 +104,6 @@ async function callGemini(apiKey, userPrompt) {
   throw lastError || new Error('All Gemini candidate models failed.');
 }
 
-/**
- * Calls OpenAI API using native fetch
- */
 async function callOpenAI(apiKey, userPrompt) {
   const endpoint = 'https://api.openai.com/v1/chat/completions';
 
@@ -151,9 +141,6 @@ async function callOpenAI(apiKey, userPrompt) {
   return cleanJsonOutput(rawText);
 }
 
-/**
- * Realistic offline mock generator when no API key is provided
- */
 function generateMockTrip(userPrompt) {
   const lower = userPrompt.toLowerCase();
   let destination = 'Hyderabad';
@@ -283,13 +270,6 @@ function generateMockTrip(userPrompt) {
   });
 }
 
-/**
- * Main generator function called by the Express controller.
- * Isolates LLM provider logic and safely parses result into JSON.
- * 
- * @param {string} userPrompt 
- * @returns {Promise<object>}
- */
 export async function generateTrip(userPrompt) {
   const geminiKey = process.env.GEMINI_API_KEY;
   const openAiKey = process.env.OPENAI_API_KEY;
@@ -301,7 +281,6 @@ export async function generateTrip(userPrompt) {
   } else if (openAiKey && openAiKey !== 'your_openai_api_key_here') {
     rawJsonText = await callOpenAI(openAiKey, userPrompt);
   } else {
-    console.info('[Server] No LLM API key configured in .env - generating realistic structured trip data.');
     rawJsonText = generateMockTrip(userPrompt);
   }
   try {

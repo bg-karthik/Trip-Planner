@@ -150,9 +150,7 @@ export function App() {
               <p className="app-subtitle">Create personalized travel itineraries in seconds</p>
             </div>
           </div>
-          <div className="badge-tech">
-            <span>React + Express + AI</span>
-          </div>
+
         </div>
       </header>
 
