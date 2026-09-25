@@ -1,3 +1,4 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 const API_TIMEOUT_MS = 35000;
 
 export async function generateTripFromApi(prompt, signal) {
@@ -6,8 +7,11 @@ export async function generateTripFromApi(prompt, signal) {
   }
 
   const timeoutController = new AbortController();
+
   const timeoutId = setTimeout(() => {
-    timeoutController.abort(new Error('The request timed out. The AI server took too long to respond.'));
+    timeoutController.abort(
+      new Error('The request timed out. The AI server took too long to respond.')
+    );
   }, API_TIMEOUT_MS);
 
   const effectiveSignal = signal
@@ -17,7 +21,7 @@ export async function generateTripFromApi(prompt, signal) {
     : timeoutController.signal;
 
   try {
-    const response = await fetch('/api/generate-trip', {
+    const response = await fetch(`${API_BASE_URL}/api/generate-trip`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -31,7 +35,10 @@ export async function generateTripFromApi(prompt, signal) {
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
-      const serverErrorMessage = data?.error || `Server responded with error status ${response.status}.`;
+      const serverErrorMessage =
+        data?.error ||
+        `Server responded with error status ${response.status}.`;
+
       throw new Error(serverErrorMessage);
     }
 
@@ -48,7 +55,9 @@ export async function generateTripFromApi(prompt, signal) {
     }
 
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new Error('Unable to reach the server. Make sure the backend server is running on port 5000.');
+      throw new Error(
+        'Unable to reach the server. Please check your internet connection or try again.'
+      );
     }
 
     throw error;
