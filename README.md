@@ -148,11 +148,38 @@ Unlike a generic chatbot interface, the application uses structured JSON output 
         ├── Expand / Collapse
         ├── Reorder
         └── Remove
+````
+
+---
 
 ## 5. Project Structure
 
-```
-
+```text
+Trip/
+├── src/
+│   ├── components/
+│   │   ├── PromptInput.jsx
+│   │   ├── TripHeader.jsx
+│   │   ├── DaySection.jsx
+│   │   ├── StopCard.jsx
+│   │   ├── LoadingState.jsx
+│   │   ├── ErrorState.jsx
+│   │   └── EmptyState.jsx
+│   ├── lib/
+│   │   ├── api.js
+│   │   └── validateTrip.js
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+├── server/
+│   ├── index.js
+│   └── generateTrip.js
+├── test/
+│   └── test-cases.js
+├── .env.example
+├── package.json
+├── vite.config.js
+└── README.md
 ```
 
 ---
@@ -160,100 +187,181 @@ Unlike a generic chatbot interface, the application uses structured JSON output 
 ## 6. Setup & Installation
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- npm (installed with Node)
 
-### Installation Steps
-1. Clone or open the project folder in your terminal:
-   ```bash
-   cd Trip
-   ```
+* Node.js 18+
+* npm
+* Google Gemini API key
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Clone the Repository
+
+```bash
+git clone <repository-url>
+cd Trip
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
 
 ---
 
 ## 7. Environment Variables
 
-Create a `.env` file in the root directory (or copy from `.env.example`):
+Create a `.env` file in the project root:
 
-```bash
-cp .env.example .env
+```env
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
-Set your preferred API key:
-```ini
-PORT=5000
+For local frontend development:
 
-# Google Gemini API Key (Recommended - Free tier available at https://aistudio.google.com/)
-GEMINI_API_KEY=your_gemini_api_key_here
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+For the deployed Vercel frontend:
+
+```env
+VITE_API_URL=https://trip-planner-backend-bbfc.onrender.com
+```
+
+> **Important:** Never put the Gemini API key in frontend code or in a `VITE_` environment variable. The Gemini API key is used only by the backend.
 
 ---
 
 ## 8. How to Run Frontend & Backend
 
-### Run Everything with One Command (Recommended)
+### Run Both Together
+
 ```bash
 npm run dev
 ```
-This runs both the Express backend (`http://localhost:5000`) and the Vite React frontend (`http://localhost:5173`) concurrently. Open **`http://localhost:5173`** in your browser.
 
-### Individual Commands
-- **Frontend only**: `npm run client` (starts Vite at `http://localhost:5173`)
-- **Backend only**: `npm run server` (starts Express at `http://localhost:5000`)
-- **Build production bundle**: `npm run build`
-- **Run automated validator tests**: `npm test`
+This starts:
+
+* Frontend → Vite development server
+* Backend → Express server
+
+### Run Frontend Only
+
+```bash
+npm run client
+```
+
+### Run Backend Only
+
+```bash
+npm run server
+```
+
+### Run Tests
+
+```bash
+npm test
+```
+
+### Build Frontend
+
+```bash
+npm run build
+```
 
 ---
 
 ## 9. Example Trip Prompts
 
-Here are some sample prompts you can try:
+Try prompts such as:
 
-- *"I want to spend 3 days in Hyderabad with my family. We like history, food and relaxed sightseeing. Budget is moderate."*
-- *"4 days in Tokyo exploring vibrant anime culture, sushi spots, and scenic temples."*
-- *"3 days beach and heritage trip in Goa with friends. We want seafood, water activities, and relaxing sunsets."*
-- *"2 days in Paris focusing on famous art museums, romantic cafes, and iconic landmarks."*
+```text
+3 days in Hyderabad with my family focused on history and food with a moderate budget
+```
+
+```text
+5 days in Goa for two people, beaches and local food, relaxed budget
+```
+
+```text
+4 days in Bangalore for a solo traveler interested in cafes, technology and local culture
+```
+
+```text
+2 days in Delhi focusing on historical places and street food
+```
+
+The AI converts the natural-language request into a structured itinerary containing days and individual stops.
 
 ---
 
 ## 10. Error Handling & Edge Cases
 
-The project explicitly handles key failure modes:
+The application is designed to handle common AI and network failures gracefully.
 
-| Scenario | Handling Strategy |
-| :--- | :--- |
-| **Malformed JSON** | `generateTrip.js` cleans markdown code blocks; `validateTrip.js` parses safely and returns an error without crashing. |
-| **Wrong Schema Shape** | `validateTrip.js` verifies top-level metadata, days arrays, and stop fields before rendering. |
-| **Empty AI Response** | Frontend catches missing payloads and renders the `<ErrorState>` with a retry button. |
-| **Network / Server Down** | `api.js` catches fetch errors and displays a clear message asking to check the server. |
-| **Slow Request / Timeout** | `api.js` implements a 35s `AbortController` timeout to prevent hanging UI. |
-| **Stale Responses** | An `activeRequestIdRef` guard discards older inflight responses if a new request is triggered. |
-| **Empty Input** | Frontend disables submission on empty strings; backend returns HTTP 400. |
+| Scenario                 | Handling                                          |
+| ------------------------ | ------------------------------------------------- |
+| Empty prompt             | Client-side validation                            |
+| Invalid AI JSON          | JSON parsing error handled                        |
+| Missing fields           | Schema validation                                 |
+| Incorrect response shape | Validation failure                                |
+| Empty AI response        | Error state                                       |
+| Network failure          | Error message with retry                          |
+| Slow API response        | 35-second request timeout                         |
+| Request race condition   | Request ID guard prevents stale updates           |
+| Missing API key          | Backend mock generator can provide local fallback |
+| Server error             | Backend error returned to frontend safely         |
+
+The application avoids crashing when the AI returns unexpected or malformed data.
 
 ---
 
 ## 11. Known Limitations
 
-- **No Persistent Database**: Edits made to an itinerary (reordering/removing) are kept in React memory for the session.
-- **Single Prompt Context**: Modifications are made client-side rather than re-prompting the LLM for conversational multi-turn edits (by design as this is an itinerary generator, not a chatbot).
+* AI-generated itineraries may contain inaccurate or outdated travel information.
+* The application does not currently include user authentication.
+* It does not persist trips after the page is refreshed.
+* No database is used.
+* The mock generator is intended only as a local development fallback.
+* AI response quality depends on the configured LLM API.
 
 ---
 
 ## 12. Time Spent
 
-- **Architecture & Schema Design**: ~45 minutes
-- **Backend Express & LLM Integration**: ~1 hour
-- **Validation Logic & Edge-Case Suite**: ~45 minutes
-- **Frontend UI & Interactive React State**: ~1.5 hours
-- **Styling, Mobile Responsiveness & Testing**: ~1 hour
-- **Total Time**: ~5 hours
+The assignment was completed within the intended scope and time.
+
+Approximate time spent:
+
+* Project setup & React structure: ~1 hour
+* UI implementation: ~1.5 hours
+* AI/backend integration: ~1.5 hours
+* Validation & error handling: ~1 hour
+* Testing & debugging: ~1 hour
+* Deployment & documentation: Update with actual time spent
+
+**Total:** Update with actual total time spent.
 
 ---
 
 ## 13. Honest AI Usage Note
 
-AI coding tools were used to assist with initial boilerplate generation, refining edge-case testing, and drafting documentation. The student architected the solution, designed the component hierarchy, implemented the React state interactions and request guards, and reviewed all code for correctness and clarity.
+AI coding tools were used extensively during development for project scaffolding, implementation assistance, debugging, testing ideas, and documentation.
+
+The generated implementation was reviewed, tested, and adapted to meet the assignment requirements.
+
+The main areas of focus were:
+
+* React state management
+* LLM integration
+* Structured JSON generation
+* JSON/schema validation
+* Error handling
+* Interactive itinerary controls
+* Responsive UI
+
+The final implementation was reviewed and tested to ensure that I understand the architecture and the main technical decisions made in the project.
+
+---
+
+```
+```
