@@ -1,12 +1,19 @@
 # Trip Planner AI 🧭
 
-An AI-powered travel itinerary generator built with **React**, **Node.js/Express**, and a structured LLM integration. 
+An AI-powered travel itinerary generator built with **React**, **Node.js/Express**, and a structured LLM integration.
 
-This project was built for a **Frontend Internship Assignment** by a 4th-year BTech student. It focuses on clean React fundamentals, strict schema validation, error resiliency, and an interactive stateful itinerary.
+This project was built for a **Frontend Internship Assignment** by a 4th-year BTech student. It focuses on clean React fundamentals, structured AI responses, schema validation, error handling, and an interactive stateful itinerary.
+
+---
+
+## Live Demo
+
+- **Live Application:** https://trip-planner-3078.vercel.app/
 
 ---
 
 ## Table of Contents
+
 - [1. Project Overview](#1-project-overview)
 - [2. Key Features](#2-key-features)
 - [3. Tech Stack](#3-tech-stack)
@@ -25,75 +32,122 @@ This project was built for a **Frontend Internship Assignment** by a 4th-year BT
 
 ## 1. Project Overview
 
-Trip Planner AI takes free-form natural language input (e.g., *"3 days in Hyderabad with my family focused on history and food with a moderate budget"*) and transforms it into an interactive day-by-day travel itinerary.
+Trip Planner AI takes free-form natural language input such as:
 
-Unlike a generic chatbot interface, this application enforces strict JSON output from the AI, parses and validates the payload on the client, and renders a structured, interactive UI that users can customize in real time.
+> "3 days in Hyderabad with my family focused on history and food with a moderate budget"
+
+and transforms it into an interactive day-by-day travel itinerary.
+
+Unlike a generic chatbot interface, the application uses structured JSON output from the AI, validates the response, and renders it as an interactive UI that users can customize in real time.
 
 ---
 
 ## 2. Key Features
 
-- 📝 **Free-Form Trip Input**: Natural text input with quick-select prompt chips.
-- 🤖 **Structured AI Generation**: Strict backend system prompt enforcing predictable JSON output.
-- 🛡️ **Schema Validation**: Robust client-side validation (`validateTrip.js`) guarding against malformed JSON, missing fields, or empty responses.
-- 🔄 **Interactive Itinerary Customization**:
-  - **Expand / Collapse**: View and hide in-depth descriptions and visit tips.
-  - **Reorder Stops**: Move stops up (▲) or down (▼) using pure immutable React state.
-  - **Remove Stops**: Delete unwanted stops (✕) dynamically with instant state updates.
-- ⚡ **Race Condition Protection**: Request ID guard (`useRef`) preventing slow/stale responses from overwriting newer user requests.
-- 📱 **Clean Responsive Design**: Tailored for both desktop and mobile viewports with vanilla CSS.
-- 🔁 **Empty, Loading & Error States**: Clear visual feedback, loading spinner, and retry mechanisms.
+- 📝 **Free-Form Trip Input**
+  - Natural language trip descriptions
+  - Quick-select example prompts
+
+- 🤖 **Structured AI Generation**
+  - Backend prompt instructs the LLM to return a predictable JSON structure
+  - Real Google Gemini API integration
+
+- 🛡️ **Schema Validation**
+  - Validates AI-generated itinerary data
+  - Handles malformed JSON, missing fields, incorrect structures, and empty responses
+
+- 🔄 **Interactive Itinerary Customization**
+  - **Expand / Collapse:** View or hide additional itinerary details
+  - **Reorder Stops:** Move stops up or down
+  - **Remove Stops:** Delete unwanted stops dynamically
+
+- ⚡ **Race Condition Protection**
+  - Uses a request ID guard with `useRef`
+  - Prevents older or slower requests from overwriting newer results
+
+- 📱 **Responsive Design**
+  - Works across desktop and mobile screen sizes
+  - Built with vanilla CSS
+
+- 🔁 **Loading, Empty & Error States**
+  - Loading feedback while generating an itinerary
+  - Empty state for the initial screen
+  - Error state with retry support
 
 ---
 
 ## 3. Tech Stack
 
-- **Frontend**:
-  - React 18 (Functional Components, Hooks: `useState`, `useRef`)
-  - Vite 6 (Fast build tool & dev proxy)
-  - Vanilla CSS (Modern CSS variables, flexbox, grid, responsive design)
-- **Backend**:
-  - Node.js
-  - Express (REST API endpoint `POST /api/generate-trip`)
-  - `cors` & `dotenv`
-- **AI Integration**:
-  - Isolated LLM provider layer supporting Google Gemini API (`GEMINI_API_KEY`) or OpenAI (`OPENAI_API_KEY`), with a built-in smart mock generator for immediate offline testing.
+### Frontend
+
+- React 18
+- Functional Components
+- React Hooks (`useState`, `useRef`)
+- Vite 6
+- Vanilla CSS
+
+### Backend
+
+- Node.js
+- Express
+- CORS
+- dotenv
+- REST API
+
+### AI Integration
+
+- Google Gemini API
+- Structured JSON generation
+- Backend-only API key handling
+- Built-in mock generator for local development when no API key is configured
+
+### Deployment
+
+- **Frontend:** Vercel
+- **Backend:** Render
 
 ---
 
 ## 4. How It Works
 
-```
+```text
 [ User Input in React ]
         │
         ▼
-[ Client API Service: POST /api/generate-trip ]
+[ Client API Service ]
         │
         ▼
-[ Express Server: server/index.js ]
+[ Express Backend ]
         │
         ▼
-[ Isolated LLM Layer: server/generateTrip.js ]
-  └── Strict Prompting (JSON Schema, No Markdown)
+[ LLM Layer: generateTrip.js ]
+        │
+        ├── Strict JSON Prompt
         │
         ▼
-[ LLM API (Gemini / OpenAI) ] ──> Returns structured JSON string
+[ Google Gemini API ]
         │
         ▼
-[ Express Backend ] ──> Sends JSON payload to client
+[ Structured JSON Response ]
+        │
+        ▼
+[ Express Backend ]
         │
         ▼
 [ Frontend Validator: validateTrip.js ]
-  ├── Validates top-level fields (tripTitle, destination, days)
-  ├── Validates day objects & stops array
-  └── Sanitizes missing or incomplete fields
+        │
+        ├── Validates trip data
+        ├── Validates days
+        └── Validates stops
         │
         ▼
-[ Interactive React State UI: App.jsx ]
-  └── Render DaySection, StopCard, Expand/Collapse, Reorder, Remove
-```
-
----
+[ React State ]
+        │
+        ▼
+[ Interactive Itinerary UI ]
+        ├── Expand / Collapse
+        ├── Reorder
+        └── Remove
 
 ## 5. Project Structure
 
@@ -160,8 +214,6 @@ PORT=5000
 
 # Google Gemini API Key (Recommended - Free tier available at https://aistudio.google.com/)
 GEMINI_API_KEY=your_gemini_api_key_here
-
-> **Note**: If no API key is provided, the backend automatically uses a built-in realistic mock generator so the app can be evaluated immediately without setup barriers.
 
 ---
 
