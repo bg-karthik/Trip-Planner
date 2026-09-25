@@ -161,10 +161,6 @@ PORT=5000
 # Google Gemini API Key (Recommended - Free tier available at https://aistudio.google.com/)
 GEMINI_API_KEY=your_gemini_api_key_here
 
-# OR OpenAI API Key:
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
 > **Note**: If no API key is provided, the backend automatically uses a built-in realistic mock generator so the app can be evaluated immediately without setup barriers.
 
 ---
